@@ -1,0 +1,950 @@
+{
+  "nodes": [
+    {
+      "width": 300,
+      "height": 378,
+      "id": "markdownTextSplitter_0",
+      "position": {
+        "x": 1081.1540334344143,
+        "y": -113.73571627207801
+      },
+      "type": "customNode",
+      "data": {
+        "id": "markdownTextSplitter_0",
+        "label": "Markdown Text Splitter",
+        "version": 1,
+        "name": "markdownTextSplitter",
+        "type": "MarkdownTextSplitter",
+        "baseClasses": [
+          "MarkdownTextSplitter",
+          "RecursiveCharacterTextSplitter",
+          "TextSplitter",
+          "BaseDocumentTransformer"
+        ],
+        "category": "Text Splitters",
+        "description": "Split your content into documents based on the Markdown headers",
+        "inputParams": [
+          {
+            "label": "Chunk Size",
+            "name": "chunkSize",
+            "type": "number",
+            "default": 1000,
+            "optional": true,
+            "id": "markdownTextSplitter_0-input-chunkSize-number"
+          },
+          {
+            "label": "Chunk Overlap",
+            "name": "chunkOverlap",
+            "type": "number",
+            "optional": true,
+            "id": "markdownTextSplitter_0-input-chunkOverlap-number"
+          }
+        ],
+        "inputAnchors": [],
+        "inputs": {
+          "chunkSize": "4000",
+          "chunkOverlap": ""
+        },
+        "outputAnchors": [
+          {
+            "id": "markdownTextSplitter_0-output-markdownTextSplitter-MarkdownTextSplitter|RecursiveCharacterTextSplitter|TextSplitter|BaseDocumentTransformer",
+            "name": "markdownTextSplitter",
+            "label": "MarkdownTextSplitter",
+            "type": "MarkdownTextSplitter | RecursiveCharacterTextSplitter | TextSplitter | BaseDocumentTransformer"
+          }
+        ],
+        "outputs": {},
+        "selected": false
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1081.1540334344143,
+        "y": -113.73571627207801
+      },
+      "dragging": false
+    },
+    {
+      "width": 300,
+      "height": 532,
+      "id": "conversationalRetrievalQAChain_0",
+      "position": {
+        "x": 2262.1986022669694,
+        "y": 229.38589782758842
+      },
+      "type": "customNode",
+      "data": {
+        "id": "conversationalRetrievalQAChain_0",
+        "label": "Conversational Retrieval QA Chain",
+        "version": 3,
+        "name": "conversationalRetrievalQAChain",
+        "type": "ConversationalRetrievalQAChain",
+        "baseClasses": [
+          "ConversationalRetrievalQAChain",
+          "BaseChain",
+          "Runnable"
+        ],
+        "category": "Chains",
+        "description": "Document QA - built on RetrievalQAChain to provide a chat history component",
+        "inputParams": [
+          {
+            "label": "Return Source Documents",
+            "name": "returnSourceDocuments",
+            "type": "boolean",
+            "optional": true,
+            "id": "conversationalRetrievalQAChain_0-input-returnSourceDocuments-boolean"
+          },
+          {
+            "label": "Rephrase Prompt",
+            "name": "rephrasePrompt",
+            "type": "string",
+            "description": "Using previous chat history, rephrase question into a standalone question",
+            "warning": "Prompt must include input variables: {chat_history} and {question}",
+            "rows": 4,
+            "additionalParams": true,
+            "optional": true,
+            "default": "Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question.\n\nChat History:\n{chat_history}\nFollow Up Input: {question}\nStandalone Question:",
+            "id": "conversationalRetrievalQAChain_0-input-rephrasePrompt-string"
+          },
+          {
+            "label": "Response Prompt",
+            "name": "responsePrompt",
+            "type": "string",
+            "description": "Taking the rephrased question, search for answer from the provided context",
+            "warning": "Prompt must include input variable: {context}",
+            "rows": 4,
+            "additionalParams": true,
+            "optional": true,
+            "default": "You are a helpful assistant. Using the provided context, answer the user's question to the best of your ability using the resources provided.\nIf there is nothing in the context relevant to the question at hand, just say \"Hmm, I'm not sure.\" Don't try to make up an answer.\n------------\n{context}\n------------\nREMEMBER: If there is no relevant information within the context, just say \"Hmm, I'm not sure.\" Don't try to make up an answer.",
+            "id": "conversationalRetrievalQAChain_0-input-responsePrompt-string"
+          }
+        ],
+        "inputAnchors": [
+          {
+            "label": "Chat Model",
+            "name": "model",
+            "type": "BaseChatModel",
+            "id": "conversationalRetrievalQAChain_0-input-model-BaseChatModel"
+          },
+          {
+            "label": "Vector Store Retriever",
+            "name": "vectorStoreRetriever",
+            "type": "BaseRetriever",
+            "id": "conversationalRetrievalQAChain_0-input-vectorStoreRetriever-BaseRetriever"
+          },
+          {
+            "label": "Memory",
+            "name": "memory",
+            "type": "BaseMemory",
+            "optional": true,
+            "description": "If left empty, a default BufferMemory will be used",
+            "id": "conversationalRetrievalQAChain_0-input-memory-BaseMemory"
+          },
+          {
+            "label": "Input Moderation",
+            "description": "Detect text that could generate harmful output and prevent it from being sent to the language model",
+            "name": "inputModeration",
+            "type": "Moderation",
+            "optional": true,
+            "list": true,
+            "id": "conversationalRetrievalQAChain_0-input-inputModeration-Moderation"
+          }
+        ],
+        "inputs": {
+          "inputModeration": "",
+          "model": "{{chatOpenAI_0.data.instance}}",
+          "vectorStoreRetriever": "{{chroma_0.data.instance}}",
+          "memory": "",
+          "returnSourceDocuments": true,
+          "rephrasePrompt": "Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question.\n\nChat History:\n{chat_history}\nFollow Up Input: {question}\nStandalone Question:",
+          "responsePrompt": "You are a helpful assistant. Using the provided context, answer the user's question to the best of your ability using the resources provided.\nIf there is nothing in the context relevant to the question at hand, just say \"Hmm, I'm not sure.\" Don't try to make up an answer.\n------------\n{context}\n------------\nREMEMBER: If there is no relevant information within the context, just say \"Hmm, I'm not sure.\" Don't try to make up an answer."
+        },
+        "outputAnchors": [
+          {
+            "id": "conversationalRetrievalQAChain_0-output-conversationalRetrievalQAChain-ConversationalRetrievalQAChain|BaseChain|Runnable",
+            "name": "conversationalRetrievalQAChain",
+            "label": "ConversationalRetrievalQAChain",
+            "type": "ConversationalRetrievalQAChain | BaseChain | Runnable"
+          }
+        ],
+        "outputs": {},
+        "selected": false
+      },
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": 2262.1986022669694,
+        "y": 229.38589782758842
+      }
+    },
+    {
+      "width": 300,
+      "height": 670,
+      "id": "chatOpenAI_0",
+      "position": {
+        "x": 1848.10147093022,
+        "y": -213.12507406389523
+      },
+      "type": "customNode",
+      "data": {
+        "id": "chatOpenAI_0",
+        "label": "ChatOpenAI",
+        "version": 8,
+        "name": "chatOpenAI",
+        "type": "ChatOpenAI",
+        "baseClasses": [
+          "ChatOpenAI",
+          "BaseChatModel",
+          "BaseLanguageModel",
+          "Runnable"
+        ],
+        "category": "Chat Models",
+        "description": "Wrapper around OpenAI large language models that use the Chat endpoint",
+        "inputParams": [
+          {
+            "label": "Connect Credential",
+            "name": "credential",
+            "type": "credential",
+            "credentialNames": [
+              "openAIApi"
+            ],
+            "id": "chatOpenAI_0-input-credential-credential"
+          },
+          {
+            "label": "Model Name",
+            "name": "modelName",
+            "type": "asyncOptions",
+            "loadMethod": "listModels",
+            "default": "gpt-4o-mini",
+            "id": "chatOpenAI_0-input-modelName-asyncOptions"
+          },
+          {
+            "label": "Temperature",
+            "name": "temperature",
+            "type": "number",
+            "step": 0.1,
+            "default": 0.9,
+            "optional": true,
+            "id": "chatOpenAI_0-input-temperature-number"
+          },
+          {
+            "label": "Streaming",
+            "name": "streaming",
+            "type": "boolean",
+            "default": true,
+            "optional": true,
+            "additionalParams": true,
+            "id": "chatOpenAI_0-input-streaming-boolean"
+          },
+          {
+            "label": "Max Tokens",
+            "name": "maxTokens",
+            "type": "number",
+            "step": 1,
+            "optional": true,
+            "additionalParams": true,
+            "id": "chatOpenAI_0-input-maxTokens-number"
+          },
+          {
+            "label": "Top Probability",
+            "name": "topP",
+            "type": "number",
+            "step": 0.1,
+            "optional": true,
+            "additionalParams": true,
+            "id": "chatOpenAI_0-input-topP-number"
+          },
+          {
+            "label": "Frequency Penalty",
+            "name": "frequencyPenalty",
+            "type": "number",
+            "step": 0.1,
+            "optional": true,
+            "additionalParams": true,
+            "id": "chatOpenAI_0-input-frequencyPenalty-number"
+          },
+          {
+            "label": "Presence Penalty",
+            "name": "presencePenalty",
+            "type": "number",
+            "step": 0.1,
+            "optional": true,
+            "additionalParams": true,
+            "id": "chatOpenAI_0-input-presencePenalty-number"
+          },
+          {
+            "label": "Timeout",
+            "name": "timeout",
+            "type": "number",
+            "step": 1,
+            "optional": true,
+            "additionalParams": true,
+            "id": "chatOpenAI_0-input-timeout-number"
+          },
+          {
+            "label": "BasePath",
+            "name": "basepath",
+            "type": "string",
+            "optional": true,
+            "additionalParams": true,
+            "id": "chatOpenAI_0-input-basepath-string"
+          },
+          {
+            "label": "Proxy Url",
+            "name": "proxyUrl",
+            "type": "string",
+            "optional": true,
+            "additionalParams": true,
+            "id": "chatOpenAI_0-input-proxyUrl-string"
+          },
+          {
+            "label": "Stop Sequence",
+            "name": "stopSequence",
+            "type": "string",
+            "rows": 4,
+            "optional": true,
+            "description": "List of stop words to use when generating. Use comma to separate multiple stop words.",
+            "additionalParams": true,
+            "id": "chatOpenAI_0-input-stopSequence-string"
+          },
+          {
+            "label": "BaseOptions",
+            "name": "baseOptions",
+            "type": "json",
+            "optional": true,
+            "additionalParams": true,
+            "id": "chatOpenAI_0-input-baseOptions-json"
+          },
+          {
+            "label": "Allow Image Uploads",
+            "name": "allowImageUploads",
+            "type": "boolean",
+            "description": "Allow image input. Refer to the <a href=\"https://docs.flowiseai.com/using-flowise/uploads#image\" target=\"_blank\">docs</a> for more details.",
+            "default": false,
+            "optional": true,
+            "id": "chatOpenAI_0-input-allowImageUploads-boolean"
+          },
+          {
+            "label": "Image Resolution",
+            "description": "This parameter controls the resolution in which the model views the image.",
+            "name": "imageResolution",
+            "type": "options",
+            "options": [
+              {
+                "label": "Low",
+                "name": "low"
+              },
+              {
+                "label": "High",
+                "name": "high"
+              },
+              {
+                "label": "Auto",
+                "name": "auto"
+              }
+            ],
+            "default": "low",
+            "optional": false,
+            "additionalParams": true,
+            "id": "chatOpenAI_0-input-imageResolution-options"
+          }
+        ],
+        "inputAnchors": [
+          {
+            "label": "Cache",
+            "name": "cache",
+            "type": "BaseCache",
+            "optional": true,
+            "id": "chatOpenAI_0-input-cache-BaseCache"
+          }
+        ],
+        "inputs": {
+          "cache": "",
+          "modelName": "gpt-3.5-turbo",
+          "temperature": 0.9,
+          "streaming": true,
+          "maxTokens": "",
+          "topP": "",
+          "frequencyPenalty": "",
+          "presencePenalty": "",
+          "timeout": "",
+          "basepath": "",
+          "proxyUrl": "",
+          "stopSequence": "",
+          "baseOptions": "",
+          "allowImageUploads": true,
+          "imageResolution": "low"
+        },
+        "outputAnchors": [
+          {
+            "id": "chatOpenAI_0-output-chatOpenAI-ChatOpenAI|BaseChatModel|BaseLanguageModel|Runnable",
+            "name": "chatOpenAI",
+            "label": "ChatOpenAI",
+            "description": "Wrapper around OpenAI large language models that use the Chat endpoint",
+            "type": "ChatOpenAI | BaseChatModel | BaseLanguageModel | Runnable"
+          }
+        ],
+        "outputs": {},
+        "selected": false
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1848.10147093022,
+        "y": -213.12507406389523
+      },
+      "dragging": false
+    },
+    {
+      "width": 300,
+      "height": 424,
+      "id": "openAIEmbeddings_0",
+      "position": {
+        "x": 1114.6807349284306,
+        "y": 482.2324008293234
+      },
+      "type": "customNode",
+      "data": {
+        "id": "openAIEmbeddings_0",
+        "label": "OpenAI Embeddings",
+        "version": 4,
+        "name": "openAIEmbeddings",
+        "type": "OpenAIEmbeddings",
+        "baseClasses": [
+          "OpenAIEmbeddings",
+          "Embeddings"
+        ],
+        "category": "Embeddings",
+        "description": "OpenAI API to generate embeddings for a given text",
+        "inputParams": [
+          {
+            "label": "Connect Credential",
+            "name": "credential",
+            "type": "credential",
+            "credentialNames": [
+              "openAIApi"
+            ],
+            "id": "openAIEmbeddings_0-input-credential-credential"
+          },
+          {
+            "label": "Model Name",
+            "name": "modelName",
+            "type": "asyncOptions",
+            "loadMethod": "listModels",
+            "default": "text-embedding-ada-002",
+            "id": "openAIEmbeddings_0-input-modelName-asyncOptions"
+          },
+          {
+            "label": "Strip New Lines",
+            "name": "stripNewLines",
+            "type": "boolean",
+            "optional": true,
+            "additionalParams": true,
+            "id": "openAIEmbeddings_0-input-stripNewLines-boolean"
+          },
+          {
+            "label": "Batch Size",
+            "name": "batchSize",
+            "type": "number",
+            "optional": true,
+            "additionalParams": true,
+            "id": "openAIEmbeddings_0-input-batchSize-number"
+          },
+          {
+            "label": "Timeout",
+            "name": "timeout",
+            "type": "number",
+            "optional": true,
+            "additionalParams": true,
+            "id": "openAIEmbeddings_0-input-timeout-number"
+          },
+          {
+            "label": "BasePath",
+            "name": "basepath",
+            "type": "string",
+            "optional": true,
+            "additionalParams": true,
+            "id": "openAIEmbeddings_0-input-basepath-string"
+          },
+          {
+            "label": "Dimensions",
+            "name": "dimensions",
+            "type": "number",
+            "optional": true,
+            "additionalParams": true,
+            "id": "openAIEmbeddings_0-input-dimensions-number"
+          }
+        ],
+        "inputAnchors": [],
+        "inputs": {
+          "modelName": "text-embedding-ada-002",
+          "stripNewLines": "",
+          "batchSize": "",
+          "timeout": "",
+          "basepath": "",
+          "dimensions": ""
+        },
+        "outputAnchors": [
+          {
+            "id": "openAIEmbeddings_0-output-openAIEmbeddings-OpenAIEmbeddings|Embeddings",
+            "name": "openAIEmbeddings",
+            "label": "OpenAIEmbeddings",
+            "description": "OpenAI API to generate embeddings for a given text",
+            "type": "OpenAIEmbeddings | Embeddings"
+          }
+        ],
+        "outputs": {},
+        "selected": false
+      },
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": 1114.6807349284306,
+        "y": 482.2324008293234
+      }
+    },
+    {
+      "id": "stickyNote_0",
+      "position": {
+        "x": 1119.05414840041,
+        "y": 304.34680059348875
+      },
+      "type": "stickyNote",
+      "data": {
+        "id": "stickyNote_0",
+        "label": "Sticky Note",
+        "version": 2,
+        "name": "stickyNote",
+        "type": "StickyNote",
+        "baseClasses": [
+          "StickyNote"
+        ],
+        "tags": [
+          "Utilities"
+        ],
+        "category": "Utilities",
+        "description": "Add a sticky note",
+        "inputParams": [
+          {
+            "label": "",
+            "name": "note",
+            "type": "string",
+            "rows": 1,
+            "placeholder": "Type something here",
+            "optional": true,
+            "id": "stickyNote_0-input-note-string"
+          }
+        ],
+        "inputAnchors": [],
+        "inputs": {
+          "note": "Recursively load files from Github repo, and split into chunks according to Markdown syntax.\n\nFor private repo, you need to connect Github credential."
+        },
+        "outputAnchors": [
+          {
+            "id": "stickyNote_0-output-stickyNote-StickyNote",
+            "name": "stickyNote",
+            "label": "StickyNote",
+            "description": "Add a sticky note",
+            "type": "StickyNote"
+          }
+        ],
+        "outputs": {},
+        "selected": false
+      },
+      "width": 300,
+      "height": 143,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1119.05414840041,
+        "y": 304.34680059348875
+      },
+      "dragging": false
+    },
+    {
+      "id": "stickyNote_1",
+      "position": {
+        "x": 1481.99061810943,
+        "y": 600.8550429213293
+      },
+      "type": "stickyNote",
+      "data": {
+        "id": "stickyNote_1",
+        "label": "Sticky Note",
+        "version": 2,
+        "name": "stickyNote",
+        "type": "StickyNote",
+        "baseClasses": [
+          "StickyNote"
+        ],
+        "tags": [
+          "Utilities"
+        ],
+        "category": "Utilities",
+        "description": "Add a sticky note",
+        "inputParams": [
+          {
+            "label": "",
+            "name": "note",
+            "type": "string",
+            "rows": 1,
+            "placeholder": "Type something here",
+            "optional": true,
+            "id": "stickyNote_1-input-note-string"
+          }
+        ],
+        "inputAnchors": [],
+        "inputs": {
+          "note": "Store the embeddings in-memory"
+        },
+        "outputAnchors": [
+          {
+            "id": "stickyNote_1-output-stickyNote-StickyNote",
+            "name": "stickyNote",
+            "label": "StickyNote",
+            "description": "Add a sticky note",
+            "type": "StickyNote"
+          }
+        ],
+        "outputs": {},
+        "selected": false
+      },
+      "width": 300,
+      "height": 42,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1481.99061810943,
+        "y": 600.8550429213293
+      },
+      "dragging": false
+    },
+    {
+      "id": "stickyNote_2",
+      "position": {
+        "x": 2599.168985347108,
+        "y": 244.87044713398404
+      },
+      "type": "stickyNote",
+      "data": {
+        "id": "stickyNote_2",
+        "label": "Sticky Note",
+        "version": 2,
+        "name": "stickyNote",
+        "type": "StickyNote",
+        "baseClasses": [
+          "StickyNote"
+        ],
+        "tags": [
+          "Utilities"
+        ],
+        "category": "Utilities",
+        "description": "Add a sticky note",
+        "inputParams": [
+          {
+            "label": "",
+            "name": "note",
+            "type": "string",
+            "rows": 1,
+            "placeholder": "Type something here",
+            "optional": true,
+            "id": "stickyNote_2-input-note-string"
+          }
+        ],
+        "inputAnchors": [],
+        "inputs": {
+          "note": "Conversational Retrieval QA Chain composes of 2 chains:\n\n1. A chain to rephrase user question using previous conversations\n2. A chain to provide response based on the context fetched from vector store.\n\nWhy is the need for rephrasing question?\nThis is to ensure that a follow-up question can be asked. For example:\n\n- What is the address of the Bakery shop?\n- What about the opening time?\n\nA rephrased question will be:\n- What is the opening time of the Bakery shop?\n\nThis ensure a better search to vector store, hence better output quality.\n"
+        },
+        "outputAnchors": [
+          {
+            "id": "stickyNote_2-output-stickyNote-StickyNote",
+            "name": "stickyNote",
+            "label": "StickyNote",
+            "description": "Add a sticky note",
+            "type": "StickyNote"
+          }
+        ],
+        "outputs": {},
+        "selected": false
+      },
+      "width": 300,
+      "height": 465,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 2599.168985347108,
+        "y": 244.87044713398404
+      },
+      "dragging": false
+    },
+    {
+      "id": "chroma_0",
+      "position": {
+        "x": 1843.8004728953913,
+        "y": 481.8076466539899
+      },
+      "type": "customNode",
+      "data": {
+        "id": "chroma_0",
+        "label": "Chroma",
+        "version": 2,
+        "name": "chroma",
+        "type": "Chroma",
+        "baseClasses": [
+          "Chroma",
+          "VectorStoreRetriever",
+          "BaseRetriever"
+        ],
+        "category": "Vector Stores",
+        "description": "Upsert embedded data and perform similarity search upon query using Chroma, an open-source embedding database",
+        "inputParams": [
+          {
+            "label": "Connect Credential",
+            "name": "credential",
+            "type": "credential",
+            "description": "Only needed if you have chroma on cloud services with X-Api-key",
+            "optional": true,
+            "credentialNames": [
+              "chromaApi"
+            ],
+            "id": "chroma_0-input-credential-credential"
+          },
+          {
+            "label": "Collection Name",
+            "name": "collectionName",
+            "type": "string",
+            "id": "chroma_0-input-collectionName-string"
+          },
+          {
+            "label": "Chroma URL",
+            "name": "chromaURL",
+            "type": "string",
+            "optional": true,
+            "id": "chroma_0-input-chromaURL-string"
+          },
+          {
+            "label": "Chroma Metadata Filter",
+            "name": "chromaMetadataFilter",
+            "type": "json",
+            "optional": true,
+            "additionalParams": true,
+            "id": "chroma_0-input-chromaMetadataFilter-json"
+          },
+          {
+            "label": "Top K",
+            "name": "topK",
+            "description": "Number of top results to fetch. Default to 4",
+            "placeholder": "4",
+            "type": "number",
+            "additionalParams": true,
+            "optional": true,
+            "id": "chroma_0-input-topK-number"
+          }
+        ],
+        "inputAnchors": [
+          {
+            "label": "Document",
+            "name": "document",
+            "type": "Document",
+            "list": true,
+            "optional": true,
+            "id": "chroma_0-input-document-Document"
+          },
+          {
+            "label": "Embeddings",
+            "name": "embeddings",
+            "type": "Embeddings",
+            "id": "chroma_0-input-embeddings-Embeddings"
+          },
+          {
+            "label": "Record Manager",
+            "name": "recordManager",
+            "type": "RecordManager",
+            "description": "Keep track of the record to prevent duplication",
+            "optional": true,
+            "id": "chroma_0-input-recordManager-RecordManager"
+          }
+        ],
+        "inputs": {
+          "document": [
+            "{{plainText_0.data.instance}}"
+          ],
+          "embeddings": "{{openAIEmbeddings_0.data.instance}}",
+          "recordManager": "",
+          "collectionName": "test",
+          "chromaURL": "http://svc-chromadb:8000",
+          "chromaMetadataFilter": "",
+          "topK": ""
+        },
+        "outputAnchors": [
+          {
+            "name": "output",
+            "label": "Output",
+            "type": "options",
+            "description": "",
+            "options": [
+              {
+                "id": "chroma_0-output-retriever-Chroma|VectorStoreRetriever|BaseRetriever",
+                "name": "retriever",
+                "label": "Chroma Retriever",
+                "description": "",
+                "type": "Chroma | VectorStoreRetriever | BaseRetriever"
+              },
+              {
+                "id": "chroma_0-output-vectorStore-Chroma|VectorStore",
+                "name": "vectorStore",
+                "label": "Chroma Vector Store",
+                "description": "",
+                "type": "Chroma | VectorStore"
+              }
+            ],
+            "default": "retriever"
+          }
+        ],
+        "outputs": {
+          "output": "retriever"
+        },
+        "selected": false
+      },
+      "width": 300,
+      "height": 704,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1843.8004728953913,
+        "y": 481.8076466539899
+      },
+      "dragging": false
+    },
+    {
+      "id": "plainText_0",
+      "position": {
+        "x": 1480.7200841239576,
+        "y": -52.416548892024615
+      },
+      "type": "customNode",
+      "data": {
+        "id": "plainText_0",
+        "label": "Plain Text",
+        "version": 2,
+        "name": "plainText",
+        "type": "Document",
+        "baseClasses": [
+          "Document"
+        ],
+        "category": "Document Loaders",
+        "description": "Load data from plain text",
+        "inputParams": [
+          {
+            "label": "Text",
+            "name": "text",
+            "type": "string",
+            "rows": 4,
+            "placeholder": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua...",
+            "id": "plainText_0-input-text-string"
+          },
+          {
+            "label": "Additional Metadata",
+            "name": "metadata",
+            "type": "json",
+            "description": "Additional metadata to be added to the extracted documents",
+            "optional": true,
+            "additionalParams": true,
+            "id": "plainText_0-input-metadata-json"
+          },
+          {
+            "label": "Omit Metadata Keys",
+            "name": "omitMetadataKeys",
+            "type": "string",
+            "rows": 4,
+            "description": "Each document loader comes with a default set of metadata keys that are extracted from the document. You can use this field to omit some of the default metadata keys. The value should be a list of keys, seperated by comma. Use * to omit all metadata keys execept the ones you specify in the Additional Metadata field",
+            "placeholder": "key1, key2, key3.nestedKey1",
+            "optional": true,
+            "additionalParams": true,
+            "id": "plainText_0-input-omitMetadataKeys-string"
+          }
+        ],
+        "inputAnchors": [
+          {
+            "label": "Text Splitter",
+            "name": "textSplitter",
+            "type": "TextSplitter",
+            "optional": true,
+            "id": "plainText_0-input-textSplitter-TextSplitter"
+          }
+        ],
+        "inputs": {
+          "text": "GraviX 플랫폼의 entity 정의로 카탈로그 용어 사전의 정의 내용에 기반하여 설명\n\nDatabase table 정보에서 의미있는 table과 column을 대상으로 설명\n\n\n\n-- GraviX 카탈로그의 기본 정보를 담은 table\ncreate table catalog (\n    id int8 not null, -- catalog table의 primary key (기본키). 카탈로그 식별자인 ID.\n    created_at timestamptz, -- 카탈로그 data가 생성된 시각.\n    removed boolean not null, -- 카탈로그 삭제 여부 표현. 카탈로그 라이프사이클이 영구 삭제 상태가 되면 DB에서 물리적으로 삭제하지 않고 removed column을 true 설정하여 soft delete 처리. removed column이 true인 카탈로그는 사용자가 조회할 수 없는 data.\n    updated_at timestamptz, -- 카탈로그가 update된 시각. 카탈로그 data가 생성될 때 카탈로그 table의 created_at column과 동일한 시간으로 초기 설정되고 카탈로그의 data가 변경되면 해당 시점의 시각으로 갱신.\n    auto_approval boolean, -- 카탈로그 사용 요청에 대한 승인 방식. 카탈로그는 사용 신청하고 사용 승인을 받으면 사용할 수 있음. auto_approval column의 값이 true인 카탈로그는 자동 사용 승인이 되는 카탈로그로서 사용 신청만 하면 바로 사용할 수 있음.\n    category varchar(100) not null, -- 카탈로그 유형을 category column에 code로 저장. category column에 저장되는 code 값의 종류에는 service_link, asset, api, connector, data, knowledge가 있음. 각 code가 의미하는 catalog type에 대해 service_link는 Application 카탈로그, asset은 Asset 카탈로그, data는 Data 카탈로그 그리고 knowledge는 Knowledge 카탈로그를 의미. api와 connector는 Connector 카탈로그를 의미하고 그 중에서도 api는 Connector API 카탈로그, connector는 Connector Packaged 카탈로그를 의미.\n    sub_category varchar(100), -- 카탈로그 유형에 대한 상세 분류 정보를 sub_category에 code로 저장. sub_category에 저장되는 code 값의 종류에는 APPLICATION_URI, APPLICATION_URI_PRIVATE, APPLICATION_FILE, APPLICATION_ASSISTANT, ASSET_URL, ASSET_FILE, ASSET_GEN_AI_PLUGIN, REST가 있음. 각 code가 의미하는 카탈로그 상세 분류에 대해 APPLICATION_URI는 Application 카탈로그의 프로그램 설치 URL을 의미하고, APPLICATION_URI_PRIVATE는 Application 카탈로그의 특수 목적으로 제한된 system에 연계하는 URL 정보를 의미하고, APPLICATION_FILE은 Application 카탈로그의 프로그램 또는 그 설치 파일을 의미하고, APPLICATION_ASSISTANT는 Application 카탈로그의 GenAI Agent 정보를 의미하고, ASSET_URL은 Asset 카탈로그의 문서나 소스코드 data에 접근할 수 있는 URL을 의미하고, ASSET_FILE은 Asset 카탈로그의 문서나 소스코드 파일을 의미하고, REST는 Connector API 카탈로그의 REST API 정보를 의미. sub_category의 code 값 종류는 지속해서 새로운 종류의 값이 추가될 수 있음.\n    description TEXT not null, -- 카탈로그에 대한 설명을 저장하고 있는 multi_language_set table 외래키 값.\n    document varchar(2047), -- 미사용 정보, 예약 column으로 현재 해당 정보 사용 중인 부분 없음.\n    demo varchar(2047), -- 미사용 정보, 예약 column으로 현재 해당 정보 사용 중인 부분 없음.\n    license varchar(2047), -- 미사용 정보, 예약 column으로 현재 해당 정보 사용 중인 부분 없음.\n    images TEXT, -- 미사용 정보, 예약 column으로 현재 해당 정보 사용 중인 부분 없음.\n    metadata TEXT, -- 카탈로그 유형 별로 유통하고자 하는 정보나 연계를 지원하기 위한 metadata. 카탈로그 라이프사이클 기준 사용 가능 상태가 되기 전까지 임시 정보로 참고하기 위한 column. 카탈로그가 사용 가능 상태로 전이 하면 metadata column의 정보에 기반하여 카탈로그 유형 별 확장 table에 data 생성.\n    name varchar(500) not null, -- 카탈로그의 이름\n    prior_id int8 default -1 not null, -- 카탈로그 업그레이드로 생성된 신규 카탈로그가 어떤 카탈로그로부터 생성되었는지 식별하기 위한 이전 카탈로그의 ID. 카탈로그 업그레이드로 생성되지 않은 카탈로그의 prior_id 값은 default(-1) 값. \n    product_id uuid, -- 각 카탈로그 마다 부여되는 고유한 UUID 값. 카탈로그 사용 시 service 인증 토큰 (passticket)을 구성하는 정보로 활용.\n    rating float4 not null, -- 평점 평균 점수. rating column의 값은 catalog_rating table에 사용자가 1에서 5점 사이의 점수로 catalog를 평가한 점수의 평균.\n    rating_count int4, -- 카탈로그에 평점 평가가 수행된 경우, catalog_rating table에서 몇 명의 사용자가 카탈로그를 평가를 했는지 나타내는 평가 횟수.\n    search_meta TEXT, -- 카탈로그에 대한 검색 수행을 위한 column. 카탈로그 이름, 설명 등의 정보를 합치고 특수 문자를 strip 처리한 data로 카탈로그 검색 수행 시 활용하는 column.\n    state varchar(15) not null, -- 현재 카탈로그 라이프사이클 상태 code. 카탈로그의 라이프사이클 상태 code의 종류에는 INITIALIZED, PROTOTYPED, DENIED, SUBMITTED, SUSPENDED, PUBLISHED, BLOCKED, DEPRECATED, RETIRED가 있음. 각 상태 code 별로 INITIALIZED는 카탈로그 data 생성 초기, PROTOTYPED는 임시 저장, SUBMITTED는 등록 신청, DENIED는 반려, PUBLISHED는 사용 가능, SUSPENDED는 일시 사용 중단, BLOCKED는 신규 신청 중단, DEPRECATED는 사용 중단, RETIRED는 영구 삭제를 의미. 카탈로그가 생성되면 INITIALIZED 상태를 거쳐 PROTOTYPED로 전이 하여 임시 저장 되거나 SUBMITTED 상태로 전이 하여 카탈로그 등록 신청을 진행. 카탈로그가 SUBMITTED 상태로 등록 신청된 상태에서 카탈로그 등록 신청을 반려하면 DENIED 상태로 전이하고, 이 상태에서 다시 카탈로그를 임시 저장 하여 PROTOTYPED 상태로 전이 하거나 등록 신청하여 SUBMITTED 상태로 전이 할 수 있음. 카탈로그가 SUBMITTED 상태로 등록 신청된 상태에서 카탈로그 등록 신청을 승인하면 PUBLISHED 상태가 되고 PUBLISHED, SUSPENDED, BLOCKED 상태 중 하나로 자유롭게 변경 가능. 카탈로그의 상태가 PUBLISHED 일 때에는 정상 공개 상태로 카탈로그 사용자가 카탈로그를 사용할 수 있고, SUSPENDED 상태는 기존에 사용 중이던 카탈로그 사용자를 포함하여 모든 사용자가 일시적으로 카탈로그를 사용하지 못하는 상태이고, BLOCKED 상태는 기존 카탈로그 사용자는 그대로 사용 가능하지만 신규 사용은 불가능한 상태. DEPRECATED 상태는 삭제 예정인 카탈로그의 상태로 PUBLISHED 또는 BLOCKED 상태에서 전이 할 수 있음. DEPRECATED 상태는 신규 사용 신청이 불가능하고 기존 사용 중인 곳이 더 이상 없으면 자동으로 RETIRED 상태로 전이 하거나 강제로 RETIRED 상태로 전이 시켜 영구 삭제 처리 할 수 있음. RETIRED 상태는 카탈로그가 soft deleted된 상태로 catalog table의 removed column의 값이 true가 됨.\n    unique_name varchar(500) not null, -- 카탈로그의 고유 이름 정보. 카탈로그 이름에 버전 정보를 합친 값으로 카탈로그 업그레이드로 생성된 카탈로그 간에 구분하기 위한 정보.\n    upgradable boolean default true not null, -- 카탈로그 업그레이드 가능 여부. 카탈로그 업그레이드를 수행하여 새로운 카탈로그가 생성되면 기존 카탈로그는 추가로 업그레이드 할 수 없고 신규 카탈로그의 업그레이드만 가능. 카탈로그 업그레이드가 수행된 기존 카탈로그는 upgradable column의 값이 false로 설정.\n    internal_version varchar(255), -- 카탈로그 내부 버전. 카탈로그의 수정이 발생하면 자동으로 버전이 올라감. \n    created_by int8 not null, -- 카탈로그를 생성한 특정 테넌트 소속 사용자의 ID 값.\n    updated_by int8 not null, -- 카탈로그를 수정한 특정 테넌트 소속 사용자의 ID 값.\n    health_status TEXT, -- 카탈로그의 health check 상태. 카탈로그 유형이 api인 경우에 카탈로그로 등록되는 API가 정상 상태인지 health check 호출하여 응답 받은 data와 time 및 status 정보를 저장. \n    health_updated_at timestamptz, -- 카탈로그의 health check 상태를 확인한 시각.\n    privacy varchar(20) not null default 'PUBLIC', – 카탈로그의 공개 설정 정보 code. 카탈로그 공개 설정 code 값에는 PUBLISHED와 PRIVATE가 있다. 각 code 별로 PUBLISHED는 공개 설정 값이 공개를 의미하고 PRIVATE는 공개 설정 값이 비공개를 의미한다.\n    likes_count integer default 0 not null, -- 카탈로그를 좋아요한 수. 카탈로그에 대한 인기를 파악할 수 있는 지표.\n    watch_count integer default 0 not null, -- 카탈로그를 북마크한 수. 카탈로그에 대한 관심 정도를 파악할 수 있는 지표.\n    comments_count integer default 0 not null, -- 카탈로그에 달린 댓글의 수. 카탈로그에 대한 관심 정도를 파악할 수 있는 지표.\n    reuse_count integer default 0 not null, -- 미사용 정보, 예약 column으로 현재 해당 정보 사용 중인 부분 없음.\n    view_count int8 default 0 not null, -- 카탈로그 정보를 상세 조회한 횟수. 얼마나 많은 사람들이 특정 카탈로그를 많이 조회해 보았는지 관심 척도 지표 중 하나. view_count는 카탈로그의 부수 정보로서 카탈로그로 표현되는 IT 자산 원본 정보는 아니기 때문에 view_count 값이 변경되더라도 catalog table의 updated_at column은 변경되지 않음\n    certified boolean default false, -- 미사용 정보, 예약 column으로 현재 해당 정보 사용 중인 부분 없음.\n    major_version int8, -- 카탈로그의 버전 (Content Version) 정보 중 major version 영역. 0에서 최대 999까지의 값을 가질 수 있음. \n    minor_version int8, -- 카탈로그의 버전 (Content Version) 정보 중 minor version 영역. 0에서 최대 999까지의 값을 가질 수 있음. \n    revision_version int8, -- 카탈로그의 버전 (Content Version) 정보 중 revision version 영역. 0에서 최대 999까지의 값을 가질 수 있음. \n    display_version varchar(255), -- 카탈로그의 디스플레이 버전 정보. 규격화된 버전 체계 대신 문자가 포함된 버전으로 표현할 때 사용하는 버전 값. 필수 아님.\n    \"source\" varchar(2047), -- 미사용 정보, 예약 column으로 현재 해당 정보 사용 중인 부분 없음.\n    use_approval bool NULL DEFAULT false, -- 미사용 정보, 예약 column으로 현재 해당 정보 사용 중인 부분 없음.\n    job_approval bool NULL DEFAULT false, -- 미사용 정보, 예약 column으로 현재 해당 정보 사용 중인 부분 없음.\n    no_update_column bool NULL DEFAULT false, -- 미사용 정보, 예약 column으로 현재 해당 정보 사용 중인 부분 없음.\n    adjusted_interval int4 NULL DEFAULT 0, -- 미사용 정보, 예약 column으로 현재 해당 정보 사용 중인 부분 없음.\n    split_time float4 NULL DEFAULT 0, -- 미사용 정보, 예약 column으로 현재 해당 정보 사용 중인 부분 없음.\n    tenant_id varchar(255) not null, -- 카탈로그가 소속된 테넌트의 ID.\n    category_name varchar(100), -- 사용자에게 표현되는 카탈로그 유형 별 문구.\n    reference_urls text NULL, -- 카탈로그의 참고 URL 정보. 배열 안에 type과 url field를 포함한 JSON 포맷으로 저장한다. 참고 URL의 유형이 문서인 경우에는 DOCUMENT type이고, 데모인 경우에는 DEMO type이다.\n    table_updated_at timestamptz, -- 카탈로그 등록자가 카탈로그를 수정한 시간 외에 좋아요, 조회 수, 북마크한 수 등 catalog table을 구성하는 data가 수정된 시점을 파악하기 위한 값. 사용자들은 catalog table의 updated_at column 값을 기준으로 해당 카탈로그가 수정된 시점을 식별하고, GraviX 시스템 내에서 검색 엔진 등 연계된 시스템에 최신 data로 갱신 수행을 위한 값으로 table_updated_at column의 값 활용.\n    provide_type VARCHAR(255), -- 카탈로그 제공 유형의 code 값. 제공 유형 code 값에는 GENERAL, PRESERVED, ROLEBASED가 있다. 각 code 별로 GENERAL은 일반 카탈로그를 의미하고, PRESERVED는 기본 카탈로그를 의미하며, ROLEBASED는 Role-based 카탈로그를 의미한다.\n    external_approval varchar(255), -- 카탈로그의 사용 신청 시 승인 방식이 수동인 경우 해당 카탈로그의 승인 절차 유형을 구분하기 위한 용도. 값이 지정되지 않았거나 MANUAL인 경우 수동 승인 방식을 진행하면 GraviX 시스템 내에서 카탈로그 등록자의 승인만 수행한다. 값이 KNOX인 경우에는 사용 신청 승인을 위해 외부 녹스 시스템의 결재 수행 과정이 수반 되어야 한다. 외부 승인 절차 유형의 종류는 더 추가될 수 있다.\n    child_sub_category varchar(100), -- 카탈로그의 하위 유형을 구분하기 위한 용도. Connector 카탈로그 중 Connector API 카탈로그의 일반 REST API (값: GENERAL) 유형과 GenAI 연계용 REST API (값: GEN_AI)를 구분하거나 Application 카탈로그의 URL 유형에서 일반 링크 (값: WEB_LINK)와 시스템 링크 (값: SYSTEM_LINK)를 구분한다. 값의 종류는 새로운 종류가 더 추가될 수 있다.\n    primary key (id) -- catalog table의 기본키 설정.\n);\n\n\n\n-- GraviX에 업로드된 파일 정보 table\n\ncreate table files (\n    id int8 not null, -- files table의 primary key (기본키).\n    content_type varchar(255), -- 대상 파일의 content type 정보.\n    name varchar(255), -- 파일의 확장자를 포함한 파일 이름.\n    size int8, -- 파일의 byte 단위 크기.\n    scope varchar(255), -- 파일 권한 범위를 위한 code. Code의 종류에는 PUBLIC, PRIVATE, PERSONAL이 있다. 각 code 별로 PUBLIC은 사용자에게 공개된 파일을 의미하고 카탈로그를 사용하지 않아도 사용자가 다운로드 할 수 있는 카탈로그 첨부파일인 경우를 의미한다. PRIVATE는 허용된 사용자만 다운로드 할 수 있는 파일을 의미하고 파일 첨부가 필요한 카탈로그 유형 (Application File 카탈로그, Asset File 카탈로그 등)을 의미한다. 카탈로그에 첨부된 파일의 scope가 PRIVATE인 경우에는 카탈로그 사용 승인을 받은 워크스페이스의 사용자들이 파일을 다운로드 받을 수 있다.  PERSONAL은 카탈로그 등록자가 카탈로그 설명에 첨부한 이미지와 같이 직접적인 파일 다운로드 기능은 제공하지 않고 카탈로그를 사용하지 않아도 사용자가 파일 내용을 식별할 수는 있다.\n    category varchar(255), -- 파일의 유형 분류 code. Code의 종류에는 attached, catalog_asset, catalog_asset_gen_ai_plugin, catalog_asset_gen_ai_security_report, catalog_connector, catalog_knowledge, catalog_service_link, image가 있다. attached는 카탈로그 첨부파일을 의미한다. catalog_asset은 Asset 카탈로그의 일반 파일 유형에 첨부된 파일을 의미한다. catalog_asset_gen_ai_plugin은 Asset 카탈로그의 GenAI Plug-in 유형에 첨부된 Manifest 파일을 의미한다. catalog_asset_gen_ai_security_report는 Asset 카탈로그의 GenAI Plug-in 유형에 첨부된 보안 검토 보고서 파일을 의미한다. catalog_connector는 Connector 카탈로그의 Connector Packaged 카탈로그 유형에 첨부된 Connector library 파일을 의미한다. catalog_knowledge는 Knowledge 카탈로그에 첨부된 파일을 의미한다. catalog_service_link는 Application 카탈로그의 Application File 카탈로그 유형에 첨부되는 파일을 의미한다. image는 카탈로그의 description에 첨부되는 이미지 파일을 의미한다.\n    reference_id varchar(255), -- catalog table의 product_id 정보이다. 카탈로그의 라이프사이클 상태가 사용 가능 상태로 전이하면 카탈로그의 product_id가 설정되어 어떤 카탈로그에서 활용되는지 연결 관계가 설정된다.\n    activate boolean DEFAULT false, -- 카탈로그 라이프사이클 상태가 사용 가능 상태로 전이하면 카탈로그에서 파일을 활용할 수 있도록 파일의 상태가 activate (true 값으로 설정) 된다. 카탈로그의 상태가 영구 삭제 상태로 전이하면 더 이상 파일을 사용할 수 없도록 deactivate (false 값으로 설정) 된다.\n    created_by int8, -- 파일을 GraviX에 업로드한 특정 테넌트 소속 사용자의 ID 값.\n    created_at timestamptz not null, -- 파일을 GraviX에 업로드 하여 files data가 생성된 시각.\n    updated_at timestamptz not null, -- files table의 정보가 수정된 시각.\n    removed boolean DEFAULT false, -- 해당 data 삭제 여부.\n    reference_count int4, -- 해당 file이 참조된 횟수. \n    hard_deleted boolean NOT NULL DEFAULT false, -- 해당 file data의 실제 파일이 hard delete 처리 되었는지 여부. 테넌트 및 카탈로그 유형 별 설정에 따라 GraviX에 저장되어 있는 실제 파일의 삭제 여부를 설정할 수 있다. hard_deleted의 값이 false인 경우에는 files table에서 파일이 removed true로 삭제 처리될 때 soft delete 처리하여 실제 파일은 남아있고 hard_deleted의 값이 true인 경우에는 files table에서 파일이 removed true로 삭제처리 될 때 hard delete 처리하여 실제 파일을 삭제한다.\n    primary key (id) -- files table의 기본키 설정.\n);\n\n\n\n-- 카탈로그 유형 중 Application 카탈로그 상세 정보를 담은 table\n\ncreate table catalog_service_link (\n    id int8 not null, -- catalog_service_link table의 primary key (기본키).\n    removed boolean not null, -- 해당 data 삭제 여부. 유효한 data는 removed column의 값이 false 이다.\n    catalog_id int8 not null, -- 카탈로그 참조 ID. catalog table의 id 값이다.\n    service_id varchar(255), -- 미사용 정보, 예약 column으로 현재 해당 정보 사용 중인 부분 없음.\n    description TEXT, -- 미사용 정보, 예약 column으로 현재 해당 정보 사용 중인 부분 없음.\n    uri TEXT, -- Application URL 카탈로그인 경우 카탈로그 사용자가 접근할 수 있는 URL 정보가 저장된다. \n    application_type varchar(30) not null, -- Application 카탈로그의 하위 유형을 구분하기 위한 code 값이다. Application 카탈로그의 code 종류에는 APPLICATION_ASSISTANT, APPLICATION_FILE, APPLICATION_URI, APPLICATION_URI_PRIVATE가 있다. 각 code 별로 APPLICATION_ASSISTANT는 Application Agent 카탈로그를 의미하고 APPLICATION_FILE은 Application File 카탈로그를 의미하고 APPLICATION_URL은 Application URL 카탈로그의 일반 링크 유형을 의미하고 APPLICATION_URI_PRIVATE는 Application URL 카탈로그의 시스템 링크 유형을 의미한다.\n    primary key (id) -- catalog_service_link table의 기본키 설정.\n);\n\n\n\n-- Application 카탈로그 중 Application File 카탈로그의 상세 정보를 담은 table\n\ncreate table catalog_service_link_files (\n    service_link_id int8 not null, -- catalog_service_link table과의 외래키.\n    file_id int8 not null, -- files table과의 외래키.\n    file_name varchar(255), -- 파일의 확장자를 포함한 파일 이름.\n    file_size int8, -- 파일의 byte 단위 크기.\n    file_order int8, -- 파일의 순서. 2개 이상의 파일이 첨부되는 경우 사용자가 첨부한 순서를 식별할 수 있도록 한다.\n    removed bool -- 해당 data 삭제 여부. 유효한 data는 removed column의 값이 false 이다.\n);\n\n\n\n-- 카탈로그 유형 중 Connector 카탈로그의 Connector API 카탈로그 상세 정보를 담은 table\n\ncreate table catalog_api (\n    id int8 not null, -- catalog_api table의 primary key (기본키).\n    catalog_id int8 not null, -- 카탈로그 참조 ID. catalog table의 id 값이다.\n    removed boolean not null, -- 해당 data 삭제 여부. 유효한 data는 removed column의 값이 false 이다.\n    service_id varchar(255), -- 미사용 정보, 예약 column으로 현재 해당 정보 사용 중인 부분 없음.\n    api_definition TEXT, -- Connector API 카탈로그로 유통되는 endpoint REST API의 specification 정보로 JSON 포맷의 OAS (Open API Specification) 내용이다.\n    context varchar(255), -- 카탈로그 등록자의 REST API가 GraviX의 APIM에 등록되어 카탈로그 사용자에게 제공될 때 사용될 URI의 context 값이다. 카탈로그 간 중복 방지를 위해 unique한 값이 되어야 한다.\n    endpoint_configs TEXT, -- 카탈로그 등록자의 REST API가 등록될 GraviX의 APIM 정보이다.\n    is_default_version boolean, -- 미사용 정보, 예약 column으로 현재 해당 정보 사용 중인 부분 없음.\n    name varchar(500), -- 미사용 정보, 예약 column으로 현재 해당 정보 사용 중인 부분 없음.\n    tiers TEXT, -- 카탈로그 사용 시 API 호출에 대한 APIM 유량 제어를 위한 해당 카탈로그의 선택 가능한 단계 목록이다. CSV (Comma Separated Value) 포맷의 목록으로 카탈로그 사용 시 해당 값 중 특정 단계 이내로 사용할 수 있도록 설정된다.\n    transport TEXT, -- 미사용 정보, 예약 column으로 현재 해당 정보 사용 중인 부분 없음.\n    type varchar(255), -- 미사용 정보, 예약 column으로 현재 해당 정보 사용 중인 부분 없음.\n    version varchar(7), -- 미사용 정보, 예약 column으로 현재 해당 정보 사용 중인 부분 없음.\n    visibility varchar(255), -- 미사용 정보, 예약 column으로 현재 해당 정보 사용 중인 부분 없음.\n    test_mode boolean default false, -- 카탈로그를 사용 신청 및 승인 받지 않아도 카탈로그 사용자가 테스트로 호출해 볼 수 있는 기능의 지원 여부 값이다.\n    input_type varchar(20) default 'MANUAL' not null, -- 미사용 정보, 예약 column으로 현재 해당 정보 사용 중인 부분 없음.\n    authentication text, -- 카탈로그 등록자가 유통할 Endpoint REST API에서 API 호출 시 header에 인증 정보를 요구하는 경우를 지원하기 위한 값이다. authentication column엔 header에 설정할 정보 중 key 값이 저장되고 token value는 카탈로그 사용 승인 시점에 각 카탈로그 사용 정보에 별도로 나뉘어 관리된다.\n    health_check TEXT, -- 카탈로그 등록자의 endpoint인 웹 서비스 상태를 확인할 수 있는 health check 용 REST API 호출 정보이다.\n    api_version varchar(255) not null, -- 카탈로그 등록자가 등록한 OAS version 정보이다. OAS version 2와 3을 지원한다. Version2인 경우의 값은 OPENAPI2 이고, version3인 경우의 값은 OPENAPI3 이다.\n    api_throttling_policy varchar(255), -- 해당 API 호출 시 유량제어 throttling limit 정책이다. 카탈로그 사용 시에는 해당 정책을 기준으로 각 카탈로그 사용 건 마다 tiers column의 선택 가능한 범위 내의 단계로 설정해줄 수 있다.\n    user_type varchar(20), -- 카탈로그 등록자의 endpoint REST API를 호출할 때 인증 처리할 유형을 구분한 code 값이다. Connector API GenAI 카탈로그의 API의 인증 유형 code에는 SINGLE, FABRIX, ANYONE가 있다. 각 code 별로 SINGLE은 단일 사용자, FABRIX는 FabriX 사용자, ANYONE은 제한없음을 의미한다.\n    primary key (id) -- catalog_api table의 기본키 설정.\n);\n\n\n\n\n\n\n\n\n\n\n\ncatalog는 project (프로젝트 또는 workspace 또는 워크스페이스로 표현되는) 그룹 단위로 사용할 수 있음. project에서 catalog를 사용하려면 사용 승인을 받아야 하고 auto_approval column의 값이 true인 catalog는 사용 승인 없이 사용 신청만 하면 사용 가능.\n",
+          "textSplitter": "{{markdownTextSplitter_0.data.instance}}",
+          "metadata": "",
+          "omitMetadataKeys": ""
+        },
+        "outputAnchors": [
+          {
+            "name": "output",
+            "label": "Output",
+            "type": "options",
+            "description": "Array of document objects containing metadata and pageContent",
+            "options": [
+              {
+                "id": "plainText_0-output-document-Document|json",
+                "name": "document",
+                "label": "Document",
+                "description": "Array of document objects containing metadata and pageContent",
+                "type": "Document | json"
+              },
+              {
+                "id": "plainText_0-output-text-string|json",
+                "name": "text",
+                "label": "Text",
+                "description": "Concatenated string from pageContent of documents",
+                "type": "string | json"
+              }
+            ],
+            "default": "document"
+          }
+        ],
+        "outputs": {
+          "output": "document"
+        },
+        "selected": false
+      },
+      "width": 300,
+      "height": 487,
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": 1480.7200841239576,
+        "y": -52.416548892024615
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "openAIEmbeddings_0",
+      "sourceHandle": "openAIEmbeddings_0-output-openAIEmbeddings-OpenAIEmbeddings|Embeddings",
+      "target": "chroma_0",
+      "targetHandle": "chroma_0-input-embeddings-Embeddings",
+      "type": "buttonedge",
+      "id": "openAIEmbeddings_0-openAIEmbeddings_0-output-openAIEmbeddings-OpenAIEmbeddings|Embeddings-chroma_0-chroma_0-input-embeddings-Embeddings"
+    },
+    {
+      "source": "chroma_0",
+      "sourceHandle": "chroma_0-output-retriever-Chroma|VectorStoreRetriever|BaseRetriever",
+      "target": "conversationalRetrievalQAChain_0",
+      "targetHandle": "conversationalRetrievalQAChain_0-input-vectorStoreRetriever-BaseRetriever",
+      "type": "buttonedge",
+      "id": "chroma_0-chroma_0-output-retriever-Chroma|VectorStoreRetriever|BaseRetriever-conversationalRetrievalQAChain_0-conversationalRetrievalQAChain_0-input-vectorStoreRetriever-BaseRetriever"
+    },
+    {
+      "source": "markdownTextSplitter_0",
+      "sourceHandle": "markdownTextSplitter_0-output-markdownTextSplitter-MarkdownTextSplitter|RecursiveCharacterTextSplitter|TextSplitter|BaseDocumentTransformer",
+      "target": "plainText_0",
+      "targetHandle": "plainText_0-input-textSplitter-TextSplitter",
+      "type": "buttonedge",
+      "id": "markdownTextSplitter_0-markdownTextSplitter_0-output-markdownTextSplitter-MarkdownTextSplitter|RecursiveCharacterTextSplitter|TextSplitter|BaseDocumentTransformer-plainText_0-plainText_0-input-textSplitter-TextSplitter"
+    },
+    {
+      "source": "plainText_0",
+      "sourceHandle": "plainText_0-output-document-Document|json",
+      "target": "chroma_0",
+      "targetHandle": "chroma_0-input-document-Document",
+      "type": "buttonedge",
+      "id": "plainText_0-plainText_0-output-document-Document|json-chroma_0-chroma_0-input-document-Document"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+FROM linuxserver/code-server:latest
+
+COPY ./__custom__.crt /etc/ssl/certs
+ENV REQUESTS_CA_BUNDLE=/etc/ssl/certs/__custom__.crt
+ENV CURL_CA_BUNDLE=/etc/ssl/certs/__custom__.crt
+
+RUN sudo apt update && \
+#    sudo apt install -y ca-certificates dnsutils build-essential python3-dev python3-full python3-pip
+    sudo apt install -y ca-certificates dnsutils python3-full python3-pip
+
+ENV NODE_EXTRA_CA_CERTS=/etc/ssl/certs/__custom__.crt
+
+RUN /usr/lib/code-server/bin/code-server --extensions-dir /config/extensions --install-extension ms-python.python && \
+    /usr/lib/code-server/bin/code-server --extensions-dir /config/extensions --install-extension ms-toolsai.jupyter
+
+# RUN python3 -m venv /config/.venv
+# RUN . /config/.venv/bin/activate && \
+#     pip install ipykernel python-dotenv networkx \
+#                 langgraph langchain langchain-community langchain-openai langchain_experimental langchain-neo4j \
+#                 chromadb neo4j_graphrag
+
+WORKDIR /config/workspace

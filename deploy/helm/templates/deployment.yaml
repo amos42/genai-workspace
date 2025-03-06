@@ -1,0 +1,147 @@
+{{- $ := . -}}
+{{- range $.Values.deployment.deploymentList }}
+{{- if ne .enabled false }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .name }}
+  labels:
+    app: {{ .name }}
+spec:
+  replicas: {{ $.Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .name }}
+      release: {{ $.Release.Name }}
+  {{- if $.Values.strategy }}
+  strategy:
+    {{- if $.Values.strategy.type }}
+    type: {{ $.Values.strategy.type }}
+    {{- end }}
+    {{- if eq $.Values.strategy.type "RollingUpdate" }}
+    rollingUpdate:
+      maxSurge: {{ $.Values.strategy.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ $.Values.strategy.rollingUpdate.maxUnavailable }}
+    {{- end }}
+  {{- end }}
+  template:
+    metadata:
+      name: {{ .name }}      
+      annotations:
+        prometheus.io/scrape: 'true'
+      labels:
+        app: {{ .name }}
+        release: {{ $.Release.Name }}
+        {{- range $key, $value := .additionalLabels }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+    spec:
+      {{- if .hostNetwork }}
+      hostNetwork: {{ .hostNetwork }}
+      {{- end }}
+      containers:
+        - name: {{ .name }}
+          {{- if .fullImage }}
+          image: {{ .fullImage }}
+          {{- else }}
+          image: {{ $.Values.imageRepo }}/{{ $.Values.imageOrg }}/{{ .image }}:{{ .tag }}
+          {{- end }}
+          {{- if $.Values.resources }}
+          resources:
+            {{- if $.Values.resources.limits }}
+            limits:
+              cpu: {{ $.Values.resources.limits.cpu | quote }}
+              memory: {{ $.Values.resources.limits.memory | quote }}
+            {{- end }}
+          {{- end }}
+          imagePullPolicy: {{ .pullPolicy | default "IfNotPresent" }}
+          {{- if and .endpoint .endpoint.ports }}
+          ports:
+            {{- range .endpoint.ports }}
+            - containerPort: {{ .port }}
+              {{- if .name }}
+              name: {{ .name }}              
+              {{- end }}
+              {{- if .protocol }}
+              protocol: {{ .protocol }}
+              {{- end }}
+            {{- end -}}
+          {{- end -}}
+          {{- if .envList }}
+          env:
+            {{- range $key, $value := .envList }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+          {{- end }}
+          {{- if .envConfigList }}
+          envFrom:
+            {{- range .envConfigList }}
+              {{- if eq .type "configmap" }}
+              - configMapRef:
+                  name: {{ .name }}
+              {{- else if eq .type "secret" }}
+              - secretRef:
+                  name: {{ .name }}
+              {{- else }}
+              # do nothing
+              {{- end }}
+            {{- end }}
+          {{- end }}
+          {{- if .volumeMounts }}
+          volumeMounts:
+            {{- range .volumeMounts }}
+            - name: {{ .name }}
+              mountPath: {{ .mountPath }}              
+              {{- if .subPath }}
+              subPath: {{ .subPath }}
+              {{- end }}
+              {{- if .readOnly }}
+              readOnly: {{ .readOnly }}
+              {{- end }}
+            {{- end }}
+          {{- end }}
+          {{- if .command }}
+          command:
+            {{- range .command }}
+            - {{ . | quote }}
+            {{- end }}
+          {{- end }}
+          {{- if .args }}
+          args:
+            {{- range .args }}
+            - {{ . | quote }}
+            {{- end }}
+          {{- end }}
+      {{- if .volumeMounts }}
+      volumes:
+        {{- range .volumeMounts }}
+        - name: {{ .name }}
+          {{- if eq .type "configmap" }}
+          configMap:
+            name: {{ .name }}
+          {{- else if eq .type "secret" }}
+          secret:
+            secretName: {{ .name }}
+            {{- if .optional }}
+            optional: {{ .optional }}
+            {{- end }}
+          {{- else }}
+          persistentVolumeClaim:
+            claimName: pvc-{{ .name }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+      {{- if $.Values.imagePullSecrets }}
+        {{- range $.Values.configmap }}
+        - name: {{ .volumeMount.name }}
+          configMap:
+            name: {{ .name }}
+        {{- end }}
+      {{- end }}
+      {{- if $.Values.serviceAccount }}
+      serviceAccount: {{ $.Values.serviceAccount }}
+      {{- end }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,54 @@
+{{- $ := . -}}
+{{- range $.Values.deployment.deploymentList }}
+{{- if ne .enabled false }}
+{{- $_ := . -}}
+{{- if and .endpoint .endpoint.ingress }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .name  }}
+  labels:
+    app: {{ .name }}
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+    {{- range .endpoint.ports }}
+    {{- if and .service .service.ingress }}
+    - http:
+        paths:
+          - path: {{ .service.ingress.path }}
+            pathType: Prefix
+            backend:
+              service:
+                name: svc-{{ $_.name }}
+                port:
+                  number: {{ .port }}
+      {{- if $.Values.host }}
+      {{- if .service.ingress.hostPrefix }}
+      host: {{ .service.ingress.hostPrefix }}.{{ $.Values.host }}
+      {{- else }}
+      host: {{ $.Values.host }}
+      {{- end }}
+      {{- end }}
+    {{- end }}
+    {{- end }}
+  {{- if .endpoint.tls }}
+  tls:
+  - hosts:
+    {{- range .endpoint.ports }}
+    {{- if .service.ingress }}
+    {{- if .service.ingress.hostPrefix }}
+    - {{ .service.ingress.hostPrefix }}.{{ $.Values.host }}
+    {{- else }}
+    - {{ $.Values.host }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+    secretName: {{ .endpoint.tls }}
+  {{- end }}    
+{{- end }}
+{{- end }}
+{{- end }}

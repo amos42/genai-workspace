@@ -1,0 +1,16 @@
+{{- $ := . -}}
+{{- range $.Values.configmap }}
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ .name }}
+  labels:
+    app: {{ .name }}
+data:
+  {{- range $key, $value := .data }}
+    {{ $key }}: |-
+      {{- nindent 8 $value }}
+  {{- end }}
+immutable: {{ .immutable | default false }}    
+{{- end }}

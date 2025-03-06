@@ -1,0 +1,72 @@
+{{- $ := . -}}
+{{- if $.Values.serviceList }}
+{{- range $.Values.serviceList }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-{{ .name }}
+  labels:
+    app: svc-{{ .name }}
+spec:
+  {{- if .type }}
+  type: {{ .type }}
+  {{- end }}
+  ports:
+    {{- range .endpoint.ports }}
+    - port: {{ .port }}
+      {{- if .targetPort }}
+      targetPort: {{ .targetPort | default .port }}
+      {{- end }}
+      protocol: {{ .protocol | default "TCP" }}
+      {{- if .name }}
+      name: {{ .name }}
+      {{- end }}
+      {{- if .nodePort }}
+      nodePort: {{ .nodePort }}
+      {{- end }}
+    {{- end }}
+  selector:
+    app: {{ .appName }}
+    release: {{ $.Release.Name }}
+    app.kubernetes.io/name: {{ .appName }}
+    app.kubernetes.io/instance: {{ .version }}
+    app.kubernetes.io/version: {{ .version }}
+{{- end }}
+{{- end }}
+{{- range $.Values.deployment.deploymentList }}
+{{- if ne .enabled false }}
+{{- if .endpoint }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-{{ .name }}
+  labels:
+    app: svc-{{ .name }}
+spec:
+  {{- if .serviceType }}
+  type: {{ .serviceType }}
+  {{- end }}
+  ports:
+    {{- range .endpoint.ports }}
+    - port: {{ .port }}
+      {{- if .targetPort }}
+      targetPort: {{ .targetPort }}
+      {{- end }}
+      protocol: {{ .protocol | default "TCP" }}
+      {{- if .name }}
+      name: {{ .name }}
+      {{- end }}
+      {{- if .nodePort }}
+      nodePort: {{ .nodePort }}
+      {{- end }}
+    {{- end }}
+  selector:
+    app: {{ .name }}
+    {{- range $key, $value := .additionalLabels }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}

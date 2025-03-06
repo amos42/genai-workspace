@@ -1,0 +1,396 @@
+imageRepo: sds.redii.net
+imageOrg: op-pjt
+host: local
+
+automountServiceAccountToken: true
+
+deployment:
+  deploymentList:
+    - name: neo4j
+      # image: ${imageRepo}/${imageOrg}/neo4j:${tag}
+      fullImage: neo4j:latest
+      image: neo4j
+      tag: latest
+      # enabled: false
+      envList:
+        NEO4J_AUTH: none
+        NEO4JLABS_PLUGINS: '["apoc"]'
+      endpoint:
+        serviceType: ClusterIP
+        ingress: true
+        ports:
+          - name: browser
+            port: 7474
+            service:
+              ingress:
+                hostPrefix: neo4j-browser
+                path: /
+          - name: db
+            port: 7687
+            service:
+              ingress:
+                hostPrefix: neo4j
+                path: /
+      volumeMounts:
+        - name: neo4j-data
+          mountPath: /data
+ 
+    - name: chromadb
+      # image: ${imageRepo}/${imageOrg}/chroma:${tag}
+      fullImage: chromadb/chroma:latest
+      image: chromadb/chroma
+      tag: latest
+      # enabled: false
+      envList:
+        IS_PERSISTENT: TRUE
+        # PERSIST_DIRECTORY:
+        # CHROMA_SERVER_AUTHN_PROVIDER:
+        # CHROMA_SERVER_AUTHN_CREDENTIALS_FILE:
+        # CHROMA_SERVER_AUTHN_CREDENTIALS:
+        # CHROMA_AUTH_TOKEN_TRANSPORT_HEADER:
+        # CHROMA_OTEL_EXPORTER_ENDPOINT:
+        # CHROMA_OTEL_EXPORTER_HEADERS:
+        # CHROMA_OTEL_SERVICE_NAME:
+        # CHROMA_OTEL_GRANULARITY:
+        # CHROMA_SERVER_NOFILE:
+        CHROMA_SERVER_CORS_ALLOW_ORIGINS: '["*"]'
+        REQUESTS_CA_BUNDLE: /etc/ssl/certs/__custom__.crt
+      endpoint:
+        ingress: true
+        serviceType: ClusterIP
+        ports:
+        - name: ws
+          port: 8000
+          service:
+            ingress: 
+              hostPrefix: chromadb
+              path: /
+      volumeMounts:
+        - name: chroma-data
+          mountPath: /chroma/chroma
+        - name: cert
+          type: secret
+          mountPath: /etc/ssl/certs/__custom__.crt
+          subPath: __custom__.crt
+          readOnly: true
+      args: ["--workers 1 --host 0.0.0.0 --port 8000 --proxy-headers --log-config chromadb/log_config.yml --timeout-keep-alive 30"]
+ 
+    - name: chroma-ui
+      # image: ${imageRepo}/${imageOrg}/chroma-ui:${tag}
+      fullImage: chroma-ui:latest
+      image: chroma-ui
+      tag: latest
+      # enabled: false
+      envList:
+        CHROMA_URL: http://chromadb.local:80
+        REQUESTS_CA_BUNDLE: /etc/ssl/certs/__custom__.crt
+        NODE_EXTRA_CA_CERTS: /etc/ssl/certs/__custom__.crt
+      endpoint:
+        ingress: true
+        serviceType: ClusterIP
+        ports:
+        - name: browser
+          port: 3000
+          service:
+            ingress: 
+              hostPrefix: chroma-ui
+              path: /      
+      volumeMounts:
+        - name: cert
+          type: secret
+          mountPath: /etc/ssl/certs/__custom__.crt
+          subPath: __custom__.crt
+          readOnly: true
+      pullPolicy: IfNotPresent
+ 
+    - name: opensearch
+      # image: ${imageRepo}/${imageOrg}/opensearch:${tag}
+      fullImage: opensearchproject/opensearch:latest
+      # fullImage: opensearch_for_genai:latest
+      image: opensearch
+      tag: latest
+      # enabled: false
+      envList:
+        # REQUESTS_CA_BUNDLE: /etc/ssl/certs/__custom__.crt
+        cluster.name: opensearch-cluster # Name the cluster
+        network.host: 0.0.0.0
+        node.name: opensearch # Name the node that will run in this container
+        # discovery.seed_hosts: "svc-opensearch"
+        # cluster.initial_cluster_manager_nodes: "svc-opensearch"
+        # #discovery.type: single-node
+        # #discovery.seed_hosts: opensearch # Nodes to look for when discovering the cluster
+        # #cluster.initial_cluster_manager_nodes: opensearch # Nodes eligible to serve as cluster manager
+        bootstrap.memory_lock: true # Disable JVM heap memory swapping
+        OPENSEARCH_JAVA_OPTS: -Xms512m -Xmx512m # Set min and max JVM heap sizes to at least 50% of system RAM
+        OPENSEARCH_INITIAL_ADMIN_PASSWORD: openSearch@123    # Sets the demo admin user password when using demo configuration, required for OpenSearch 2.12 and later
+        # OPENSEARCH_SECURITY_SSL_NATIVE: true
+      endpoint:
+        ingress: true
+        serviceType: ClusterIP
+        ports:
+        - name: opensearch
+          port: 9200
+          service:
+            ingress: 
+              hostPrefix: opensearch
+              path: /
+        - name: monitoring
+          port: 9600          
+      volumeMounts:
+        - name: opensearch-data
+          mountPath: /usr/share/opensearch/data
+        - name: cert
+          type: configmap
+          mountPath: /etc/ssl/certs/__custom__.crt
+          subPath: __custom__.crt
+          readOnly: true
+      pullPolicy: IfNotPresent
+
+    - name: opensearch-dashboard
+      # image: ${imageRepo}/${imageOrg}/opensearch-dashboards:${tag}
+      fullImage: opensearchproject/opensearch-dashboards:latest
+      image: opensearch
+      tag: latest
+      # enabled: false
+      envList:
+        OPENSEARCH_HOSTS: '["http://svc-opensearch:9200"]' # Define the OpenSearch nodes that OpenSearch Dashboards will query
+        opensearch.username: admin
+        opensearch.password: openSearch@123
+        #REQUESTS_CA_BUNDLE: /etc/ssl/certs/__custom__.crt
+      endpoint:
+        ingress: true
+        serviceType: ClusterIP
+        ports:
+        - name: dashboard
+          port: 5601
+          service:
+            ingress: 
+              hostPrefix: opensearch-dashboard
+              path: /      
+      volumeMounts:
+        - name: cert
+          type: configmap
+          mountPath: /etc/ssl/certs/__custom__.crt
+          subPath: __custom__.crt
+          readOnly: true
+      pullPolicy: IfNotPresent
+ 
+    - name: flowise
+      # image: ${imageRepo}/${imageOrg}/flowise:${tag}
+      fullImage: flowiseai/flowise:latest
+      image: flowiseai/flowise
+      tag: latest
+      # enabled: false
+      endpoint:
+        serviceType: ClusterIP
+        ingress: true
+        ports:
+          - port: 3000
+            service:
+              ingress: 
+                hostPrefix: flowise
+                path: /
+      envList:
+        PORT:
+        CORS_ORIGINS: '["*"]'
+        IFRAME_ORIGINS: '["*"]'
+        # FLOWISE_USERNAME:
+        # FLOWISE_PASSWORD:
+        # FLOWISE_FILE_SIZE_LIMIT:
+        # DEBUG:
+        # DATABASE_PATH:
+        # DATABASE_TYPE:
+        # DATABASE_PORT:
+        # DATABASE_HOST:
+        # DATABASE_NAME:
+        # DATABASE_USER:
+        # DATABASE_PASSWORD:
+        # DATABASE_SSL:
+        # DATABASE_SSL_KEY_BASE64:
+        # APIKEY_PATH:
+        # SECRETKEY_PATH:
+        # FLOWISE_SECRETKEY_OVERWRITE:
+        # LOG_LEVEL:
+        # LOG_PATH:
+        # BLOB_STORAGE_PATH:
+        # DISABLE_FLOWISE_TELEMETRY:
+        # MODEL_LIST_CONFIG_JSON:
+        REQUESTS_CA_BUNDLE: /etc/ssl/certs/__custom__.crt
+        CURL_CA_BUNDLE: /etc/ssl/certs/__custom__.crt
+      volumeMounts:
+        - name: flowise
+          mountPath: /root/.flowise
+        - name: cert
+          type: secret
+          mountPath: /etc/ssl/certs/__custom__.crt
+          subPath: __custom__.crt
+          readOnly: true
+      command: ["/bin/sh"]
+      args: ["-c", "sleep 3; flowise start"]
+ 
+    - name: jupyter
+      # image: ${imageRepo}/${imageOrg}/scipy-notebook:${tag}
+      # fullImage: quay.io/jupyter/scipy-notebook:2024-11-19
+      fullImage: jupyter_for_genai:latest
+      image: quay.io/jupyter/scipy-notebook
+      tag: 2024-11-19
+      # enabled: false
+      envList:
+        NOTEBOOK_ARGS: --NotebookApp.token='' --ContentsManager.allow_hidden=True
+        REQUESTS_CA_BUNDLE: /etc/ssl/certs/__custom__.crt
+        CURL_CA_BUNDLE: /etc/ssl/certs/__custom__.crt
+        GIT_SSL_CAINFO: /etc/ssl/certs/__custom__.crt
+      endpoint:
+        serviceType: ClusterIP
+        ingress: true
+        ports:
+          - port: 8888
+            service:
+              ingress: 
+                hostPrefix: jupyter
+                path: /
+      volumeMounts:
+        - name: jupyter-workspace
+          mountPath: /home/jovyan/work
+        - name: cert
+          type: secret
+          mountPath: /etc/ssl/certs/__custom__.crt
+          subPath: __custom__.crt
+          readOnly: true
+        - name: jupyter-config
+          type: configmap
+          mountPath: /opt/conda/share/jupyter/lab/settings/overrides.json
+          subPath: jupyter_config.json
+      pullPolicy: IfNotPresent
+  
+    - name: code-server
+      # image: ${imageRepo}/${imageOrg}/code-server:${latest}
+      # fullImage: coderdom/code-server:latest
+      fullImage: code-server_for_genai:latest
+      image: coderdom/code-server
+      tag: latest
+      # enabled: false
+      endpoint:
+        serviceType: ClusterIP
+        ingress: true
+        tls: tls
+        ports:
+          - port: 8080
+            service:
+              ingress: 
+                hostPrefix: code-server
+                path: /
+      envList:
+        SUDO_PASSWORD: 1111
+        # CODER_ADDITIONAL_CSP_POLICY: default-src 'self'; script-src 'self' http://code-server.local;
+        # CODER_ACCESS_URL: code-server.local
+        # CODER_WILDCARD_ACCESS_URL: '*.code-server.local'
+        # CODE_SERVER_PROXY_DOMAIN: code-server.local
+        # ALLOWED_ORIGIN: http://code-server.local
+        # CODER_HTTP_ADDRESS: http://code-server.local
+        # HSTS_HEADER: 'max-age=31536000; includeSubDomains; preload'
+        # TRUST_HEADER: 'X-Trusted-Request: true'
+        # CORS_ALLOW_ALL_ORIGINS: true
+        # CORS_ALLOWED_ORIGINS: '["*"]'
+        # CSP_ALLOWED_ORIGINS: '["*"]'
+        NODE_EXTRA_CA_CERTS: /etc/ssl/certs/__custom__.crt
+        REQUESTS_CA_BUNDLE: /etc/ssl/certs/__custom__.crt
+        CURL_CA_BUNDLE: /etc/ssl/certs/__custom__.crt
+        GIT_SSL_CAINFO: /etc/ssl/certs/__custom__.crt
+      volumeMounts:
+        - name: code-workspace
+          mountPath: /config/workspace
+        - name: cert
+          type: secret
+          mountPath: /etc/ssl/certs/__custom__.crt
+          subPath: __custom__.crt
+          readOnly: true
+        - name: code-server-config
+          type: configmap
+          mountPath: /home/coder/.config/code-server/config.yaml
+          subPath: config.yaml
+      pullPolicy: IfNotPresent
+
+persistence:
+  - name: chroma-data
+    accessMode: ReadWriteOnce
+    volumeSize: 1G
+  - name: flowise
+    accessMode: ReadWriteOnce
+    volumeSize: 1G
+  - name: neo4j-data
+    accessMode: ReadWriteOnce
+    volumeSize: 1G
+  - name: opensearch-data
+    accessMode: ReadWriteOnce
+    volumeSize: 1G
+  - name: jupyter-workspace
+    accessMode: ReadWriteOnce
+    volumeSize: 1G
+  - name: code-workspace
+    accessMode: ReadWriteOnce
+    volumeSize: 1G
+
+configmap:
+  - name: jupyter-config
+    data:
+      jupyter_server_config.py: |
+            c.ContentsManager.allow_hidden = True
+            c.FileContentsManager.allow_hidden = True
+      jupyter_config.json: |
+            {
+              "@jupyterlab/filebrowser-extension:browser": {
+                "showHiddenFiles": true
+              },
+              "@jupyterlab/terminal-extension:plugin": {
+                "theme": "dark"
+              }
+            }      
+ 
+  - name: code-server-config
+    data:
+      config.yaml: |
+            bind-addr: 0.0.0.0:8080
+            auth: none
+            # allow-http: true
+            cert: false
+ 
+secret:
+  - name: cert
+    data:
+      __custom__.crt: |
+            -----BEGIN CERTIFICATE-----
+            
+            ................
+
+            -----END CERTIFICATE-----
+  - name: tls
+    type: 'kubernetes.io/tls'
+    data:
+      tls.crt: |
+            -----BEGIN CERTIFICATE-----
+            
+            .................
+
+            -----END CERTIFICATE-----
+      tls.key: |
+            -----BEGIN PRIVATE KEY-----
+            
+            .................
+
+            -----END PRIVATE KEY-----
+
+# replicaCount: 1
+# resources:
+#   limits:
+#     cpu: 1
+#     memory: 3Gi
+#   requests:
+#     cpu: "100m"
+#     memory: "100Mi"
+#strategy:
+#   rollingUpdate:
+#     maxSurge: 1
+#     maxUnavailable: 0
+#   type: RollingUpdate
+# terminationGracePeriodSeconds: 30
