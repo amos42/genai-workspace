@@ -99,7 +99,7 @@ $ minikube tunnel --bind-address=0.0.0.0
 
 | 서비스 | 클러스터 내부 주소 | 외부 서비스 주소 |
 |-------|-------------------|-----------------|
-| Neo4j | http://svc-neo4j:7687 <br/> http://svc-neo4j-browser:7474 | http://neo4j.local:80 <br/> http://neo4j-browser.local |
+| Neo4j | http://svc-neo4j:7687 <br/> http://svc-neo4j-browser:7474 | http://neo4j.local <br/> http://neo4j-browser.local |
 | ChromaDB | http://svc-chromadb:8000 <br/> http://svc-chroma-ui:3000 | http://chromadb.local <br/> http://chroma-ui.local |
 | Flowise | http://svc-flowise:3000 | http://flowise.local |
 | JupyterLab | http://svc-jupyter:8888 | http://jupyter.local |
