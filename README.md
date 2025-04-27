@@ -37,7 +37,11 @@ Code-server와 JupyterLab 등의 개발툴 컨테이너들을 빌드한다.
 $ eval $(minikube docker-env)
 ```
 
-Windows의 경우엔 eval 명령이 없기에 minikube docker-env로 출력 된 명령어를 직접 복사해 쓰면 된다.
+Windows의 경우엔 eval 명령이 없기에 for 문을 사용한다.
+
+```sh
+> @FOR /f "tokens=*" %i IN ('minikube -p minikube docker-env --shell cmd') DO @%i
+```
 
 * chroma-ui
 ```sh
